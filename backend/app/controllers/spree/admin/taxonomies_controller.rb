@@ -1,6 +1,7 @@
 module Spree
   module Admin
     class TaxonomiesController < ResourceController
+      # before_action :filter_taxonomies, :only => [:index]
       respond_to :json, :only => [:get_children]
 
       def get_children
@@ -16,6 +17,11 @@ module Spree
           admin_taxonomies_url
         end
       end
+
+      # def filter_taxonomies
+      #   @collection = @collection.where(user_id: spree_current_user.id)
+      #   @collection
+      # end
     end
   end
 end

@@ -21,6 +21,7 @@ $(document).ready ->
         data: (term, page) ->
           per_page: 50,
           page: page,
+          store_id: $('#store_id').val(),
           token: Spree.api_key,
           q:
             name_cont: term

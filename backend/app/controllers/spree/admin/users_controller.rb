@@ -3,13 +3,15 @@ module Spree
     class UsersController < ResourceController
       rescue_from Spree::Core::DestroyWithOrdersError, :with => :user_destroy_with_orders_error
 
-      after_action :sign_in_if_change_own_password, only: :update
+      after_action  :sign_in_if_change_own_password, only: :update
 
       # http://spreecommerce.com/blog/2010/11/02/json-hijacking-vulnerability/
       before_action :check_json_authenticity, only: :index
       before_action :load_roles
 
       def index
+        #### Multi domain not allow modify another admin users, only show normal users
+        @collection =  @collection.only_normal_users
         respond_with(@collection) do |format|
           format.html
           format.json { render :json => json_data }
@@ -24,13 +26,15 @@ module Spree
         if params[:user]
           roles = params[:user].delete("spree_role_ids")
         end
-
+        # user_params[:spree_role_ids] = ["1"]
         @user = Spree.user_class.new(user_params)
+        @user.spree_roles << Spree::Role.find_by(name: 'user')
+        @user.customer_store = Spree::Store.find_by(user_id: spree_current_user.id)
         if @user.save
 
-          if roles
-            @user.spree_roles = roles.reject(&:blank?).collect{|r| Spree::Role.find(r)}
-          end
+          # if roles
+          #   @user.spree_roles << roles.reject(&:blank?).collect{|r| Spree::Role.find(r)}
+          # end
 
           flash.now[:success] = Spree.t(:created_successfully)
           render :edit

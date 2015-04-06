@@ -7,6 +7,14 @@ module Spree
     has_many :products, through: :product_option_types
     has_and_belongs_to_many :prototypes, join_table: 'spree_option_types_prototypes'
 
+    ### Admin User ###
+    belongs_to :user, class_name: 'Spree::User'
+    ### Admin User ###
+
+    ### Multi Domain ###
+    belongs_to :store
+    ### Multi Domain ###
+    
     validates :name, presence: true, uniqueness: true 
     validates :presentation, presence: true
 

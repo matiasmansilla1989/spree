@@ -11,7 +11,7 @@ module Spree
             @taxons = Spree::Taxon.accessible_by(current_ability, :read).order(:taxonomy_id, :lft).ransack(params[:q]).result
           end
         end
-
+        @taxons = @taxons.where(store_id: params[:store_id])
         @taxons = @taxons.page(params[:page]).per(params[:per_page])
         respond_with(@taxons)
       end
@@ -30,12 +30,11 @@ module Spree
         @taxon = Spree::Taxon.new(taxon_params)
         @taxon.taxonomy_id = params[:taxonomy_id]
         taxonomy = Spree::Taxonomy.find_by(id: params[:taxonomy_id])
-
+        @taxon.store = taxonomy.store
         if taxonomy.nil?
           @taxon.errors[:taxonomy_id] = I18n.t(:invalid_taxonomy_id, scope: 'spree.api')
           invalid_resource!(@taxon) and return
         end
-
         @taxon.parent_id = taxonomy.root.id unless params[:taxon][:parent_id]
 
         if @taxon.save

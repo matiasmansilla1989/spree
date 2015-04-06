@@ -48,8 +48,9 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
   end
 
   def create
-    invoke_callbacks(:create, :before)
     @object.attributes = permitted_resource_params
+    @object.store_id = spree_current_user.store.id# if object_with_store?
+    # @object.store_id = 1
     if @object.save
       invoke_callbacks(:create, :after)
       flash[:success] = flash_message_for(@object, :successfully_created)
@@ -140,7 +141,9 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
         instance_variable_set("@#{object_name}", @object)
       else
         @collection ||= collection
-
+        if ((model_class.column_names.include? 'store_id') && (object_name != 'user'))
+          @collection = @collection.where(store_id: spree_current_user.store.id) 
+        end
         # note: we don't call authorize here as the collection method should use
         # CanCan's accessible_by method to restrict the actual records returned
 
@@ -254,5 +257,15 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
 
     def new_actions
       [:new, :create]
+    end
+
+    # Multi domain extension
+    private
+
+    def object_with_store?
+      ((object_name == 'product') || (object_name == 'option_type') || 
+      (object_name == 'property') || (object_name == 'taxonomy') || 
+      (object_name == 'taxon') || (object_name == 'prototype')
+      (object_name == 'shipping_category') || (object_name == 'shipping_method'))
     end
 end

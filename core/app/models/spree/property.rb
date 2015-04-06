@@ -11,6 +11,14 @@ module Spree
 
     after_touch :touch_all_products
 
+    #### Admin User ####
+    belongs_to :user, class_name: 'Spree::User'
+    #### Admin User ####
+
+    ### Multi Domain ###
+    belongs_to :store
+    ### Multi Domain ###
+
     private
 
     def touch_all_products

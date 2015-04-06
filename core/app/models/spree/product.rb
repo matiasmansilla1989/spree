@@ -69,6 +69,11 @@ module Spree
 
     has_many :variant_images, -> { order(:position) }, source: :images, through: :variants_including_master
 
+    #### Admin User ####
+    belongs_to :store, class_name: 'Spree::Store'
+    belongs_to :user, class_name: 'Spree::User'
+    #### Admin User ####
+
     after_create :set_master_variant_defaults
     after_create :add_associations_from_prototype
     after_create :build_variants_from_option_values_hash, if: :option_values_hash

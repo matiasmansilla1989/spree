@@ -9,6 +9,10 @@ module Spree
 
     after_save :set_name
 
+    #### Admin User ####
+    belongs_to :user, class_name: 'Spree::User'
+    #### Admin User ####
+
     default_scope -> { order("#{self.table_name}.position") }
 
     private
@@ -19,7 +23,7 @@ module Spree
             updated_at: Time.now,
           )
         else
-          self.root = Taxon.create!(taxonomy_id: id, name: name)
+          self.root = Taxon.create!(taxonomy_id: id, name: name, store_id: self.store.id)
         end
       end
 

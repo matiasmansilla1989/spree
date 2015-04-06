@@ -35,13 +35,13 @@ module Spree
         end
 
         @search = Order.accessible_by(current_ability, :index).ransack(params[:q])
-
         # lazyoading other models here (via includes) may result in an invalid query
         # e.g. SELECT  DISTINCT DISTINCT "spree_orders".id, "spree_orders"."created_at" AS alias_0 FROM "spree_orders"
         # see https://github.com/spree/spree/pull/3919
         @orders = @search.result(distinct: true).
           page(params[:page]).
           per(params[:per_page] || Spree::Config[:orders_per_page])
+        @orders = spree_current_user.store.present? ? @orders.where(store_id: spree_current_user.store.id) : []
 
         # Restore dates
         params[:q][:created_at_gt] = created_at_gt

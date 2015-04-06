@@ -17,6 +17,10 @@ module Spree
 
     belongs_to :tax_category, :class_name => 'Spree::TaxCategory'
 
+    ### Multi Domain ###
+    belongs_to :store
+    ### Multi Domain ###
+
     validates :name, presence: true
 
     validate :at_least_one_shipping_category

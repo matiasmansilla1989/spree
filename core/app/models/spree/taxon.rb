@@ -3,6 +3,14 @@ module Spree
     acts_as_nested_set dependent: :destroy
 
     belongs_to :taxonomy, class_name: 'Spree::Taxonomy', inverse_of: :taxons
+    ##### Admin User #####
+    belongs_to :user, class_name: 'Spree::User'
+    ##### Admin User #####
+
+    ### Multi Domain ###
+    belongs_to :store
+    ### Multi Domain ###
+    
     has_many :classifications, -> { order(:position) }, dependent: :delete_all, inverse_of: :taxon
     has_many :products, through: :classifications
 

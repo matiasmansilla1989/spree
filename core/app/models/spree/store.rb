@@ -5,6 +5,19 @@ module Spree
     validates :url, presence: true
     validates :mail_from_address, presence: true
 
+    #### Multi Domain ####
+    belongs_to :user, :class_name => 'Spree::User'
+    has_many   :customers, :class_name => 'Spree::User', :foreign_key => 'store_customer_id'
+    has_many   :products   
+    has_many   :option_types
+    has_many   :properties 
+    has_many   :taxons
+    has_many   :prototypes   
+    has_many   :shipping_methods
+    has_many   :shipping_categories  
+    has_many   :users
+    #### Multi Domain ####
+
     before_save :ensure_default_exists_and_is_unique
     before_destroy :validate_not_default
 
