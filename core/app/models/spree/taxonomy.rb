@@ -1,5 +1,6 @@
 module Spree
   class Taxonomy < Spree::Base
+    include MultiStore
     acts_as_list
 
     validates :name, presence: true

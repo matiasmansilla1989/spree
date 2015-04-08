@@ -20,6 +20,7 @@
 
 module Spree
   class Product < Spree::Base
+    include MultiStore
     extend FriendlyId
     friendly_id :slug_candidates, use: :history
 

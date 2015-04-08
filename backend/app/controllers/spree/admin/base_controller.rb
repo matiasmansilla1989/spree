@@ -8,7 +8,7 @@ module Spree
       layout '/spree/layouts/admin'
 
       before_action :check_alerts
-      before_action :get_store, :authorize_store_admin, :authorize_admin
+      before_action :authorize_store_admin, :authorize_admin
 
       protected
 
@@ -17,14 +17,14 @@ module Spree
         end
 
         def authorize_store_admin
-          if @store.url != spree_current_user.store.url
+          if @current_store.url != spree_current_user.store.url
             redirect_to spree.admin_unauthorized_path
           end
         end
 
-        def get_store
-          @store = Spree::Store.current(request.env['SERVER_NAME'])
-        end
+        # def get_store
+        #   @store = Spree::Store.current(request.env['SERVER_NAME'])
+        # end
 
         def authorize_admin
           if respond_to?(:model_class, true) && model_class
