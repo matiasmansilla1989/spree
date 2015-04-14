@@ -2,9 +2,9 @@ module Spree
   module Admin
     class ImagesController < ResourceController
       before_action :load_data
-
-      create.before :set_viewable
-      update.before :set_viewable
+      before_action :set_viewable, only: [:create, :update]
+      # create.before :set_viewable
+      # update.before :set_viewable
 
       private
 

@@ -69,7 +69,7 @@ module Spree
       def stock
         @variants = @product.variants.includes(*variant_stock_includes)
         @variants = [@product.master] if @variants.empty?
-        @stock_locations = StockLocation.accessible_by(current_ability, :read)
+        @stock_locations = StockLocation.accessible_by(current_ability, :read).filter_store(current_store)
         if @stock_locations.empty?
           flash[:error] = Spree.t(:stock_management_requires_a_stock_location)
           redirect_to admin_stock_locations_path
@@ -87,10 +87,10 @@ module Spree
       end
 
       def load_data
-        @taxons = Taxon.order(:name)
-        @option_types = OptionType.order(:name)
-        @tax_categories = TaxCategory.order(:name)
-        @shipping_categories = ShippingCategory.order(:name)
+        @taxons = Taxon.order(:name).filter_store(@current_store.id)
+        @option_types = OptionType.order(:name).filter_store(@current_store.id)
+        @tax_categories = TaxCategory.order(:name).filter_store(@current_store.id)
+        @shipping_categories = ShippingCategory.order(:name).filter_store(@current_store.id)
       end
 
       def collection

@@ -6,6 +6,8 @@ module Spree
     belongs_to :variant, class_name: 'Spree::Variant', inverse_of: :stock_items, counter_cache: true
     has_many :stock_movements, inverse_of: :stock_item
 
+    belongs_to :store
+
     validates_presence_of :stock_location, :variant
     validates_uniqueness_of :variant_id, scope: [:stock_location_id, :deleted_at]
     validates :count_on_hand, numericality: { greater_than_or_equal_to: 0 }, if: :verify_count_on_hand?

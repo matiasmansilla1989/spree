@@ -1,5 +1,6 @@
 module Spree
   class PaymentMethod < Spree::Base
+    include MultiStore
     acts_as_paranoid
     DISPLAY = [:both, :front_end, :back_end]
     default_scope -> { where(deleted_at: nil) }
@@ -10,6 +11,7 @@ module Spree
 
     has_many :payments, class_name: "Spree::Payment", inverse_of: :payment_method
     has_many :credit_cards, class_name: "Spree::CreditCard"
+    belongs_to :store
 
     def self.providers
       Rails.application.config.spree.payment_methods

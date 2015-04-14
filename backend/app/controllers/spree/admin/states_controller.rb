@@ -22,7 +22,7 @@ module Spree
         end
 
         def load_data
-          @countries = Country.order(:name)
+          @countries = Country.order(:name).filter_store(current_store.id)
         end
     end
   end

@@ -49,8 +49,7 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
 
   def create
     @object.attributes = permitted_resource_params
-    @object.store_id = spree_current_user.store.id# if object_with_store?
-    # @object.store_id = 1
+    @object.store_id = spree_current_user.store.id
     if @object.save
       invoke_callbacks(:create, :after)
       flash[:success] = flash_message_for(@object, :successfully_created)

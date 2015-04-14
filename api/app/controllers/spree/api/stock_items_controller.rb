@@ -4,6 +4,9 @@ module Spree
       before_action :stock_location, except: [:update, :destroy]
 
       def index
+        puts "-----" * 100
+        puts params
+        @store = Spree::StockLocation.find(params[:stock_location_id]).store
         @stock_items = scope.ransack(params[:q]).result.page(params[:page]).per(params[:per_page])
         respond_with(@stock_items)
       end

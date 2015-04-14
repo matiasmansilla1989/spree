@@ -1,7 +1,9 @@
 module Spree
   class Country < Spree::Base
+    include MultiStore
     has_many :states, -> { order('name ASC') }, dependent: :destroy
     has_many :addresses, dependent: :nullify
+    belongs_to :store
 
     validates :name, :iso_name, presence: true
 

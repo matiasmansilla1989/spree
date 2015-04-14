@@ -4,6 +4,8 @@ require 'spree/order/checkout'
 module Spree
   class Order < Spree::Base
 
+    include MultiStore
+
     ORDER_NUMBER_LENGTH  = 9
     ORDER_NUMBER_LETTERS = false
     ORDER_NUMBER_PREFIX  = 'R'
@@ -421,7 +423,7 @@ module Spree
     end
 
     def available_payment_methods
-      @available_payment_methods ||= (PaymentMethod.available(:front_end) + PaymentMethod.available(:both)).uniq
+      @available_payment_methods ||= (PaymentMethod.filter_store(current_store).available(:front_end) + PaymentMethod.filter_store(current_store).available(:both)).uniq
     end
 
     def billing_firstname

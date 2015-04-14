@@ -42,7 +42,7 @@ module Spree
 
       private
         def load_data
-          @tax_categories = TaxCategory.order(:name)
+          @tax_categories = TaxCategory.order(:name).filter_store(current_store)
         end
     end
   end

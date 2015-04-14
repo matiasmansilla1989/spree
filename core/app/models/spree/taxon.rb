@@ -1,5 +1,6 @@
 module Spree
   class Taxon < Spree::Base
+    include MultiStore
     acts_as_nested_set dependent: :destroy
 
     belongs_to :taxonomy, class_name: 'Spree::Taxonomy', inverse_of: :taxons

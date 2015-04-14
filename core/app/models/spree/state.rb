@@ -1,7 +1,9 @@
 module Spree
   class State < Spree::Base
+    include MultiStore
     belongs_to :country, class_name: 'Spree::Country'
     has_many :addresses, dependent: :nullify
+    belongs_to :store
 
     validates :country, :name, presence: true
 

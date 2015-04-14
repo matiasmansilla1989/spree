@@ -17,9 +17,9 @@ module Spree
         end
 
         def load_data
-          @countries = Country.order(:name)
-          @states = State.order(:name)
-          @zones = Zone.order(:name)
+          @countries = Country.order(:name).filter_store(current_store.id)
+          @states = State.order(:name).filter_store(current_store.id)
+          @zones = Zone.order(:name).filter_store(current_store.id)
         end
     end
   end

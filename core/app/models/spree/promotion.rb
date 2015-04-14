@@ -1,11 +1,13 @@
 module Spree
   class Promotion < Spree::Base
+    include MultiStore
     MATCH_POLICIES = %w(all any)
     UNACTIVATABLE_ORDER_STATES = ["complete", "awaiting_return", "returned"]
 
     attr_reader :eligibility_errors
 
     belongs_to :promotion_category
+    belongs_to :store
 
     has_many :promotion_rules, autosave: true, dependent: :destroy
     alias_method :rules, :promotion_rules

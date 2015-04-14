@@ -123,7 +123,7 @@ module Spree
       if checkout_zone && checkout_zone.kind == 'country'
         countries = checkout_zone.country_list
       else
-        countries = Country.all
+        countries = current_store.countries
       end
 
       countries.collect do |country|

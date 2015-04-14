@@ -1,5 +1,6 @@
 module Spree
   class OptionType < Spree::Base
+    include MultiStore
     acts_as_list
 
     has_many :option_values, -> { order(:position) }, dependent: :destroy, inverse_of: :option_type

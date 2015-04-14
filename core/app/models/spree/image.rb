@@ -1,5 +1,6 @@
 module Spree
   class Image < Asset
+    belongs_to :store
     validate :no_attachment_errors
 
     has_attached_file :attachment,

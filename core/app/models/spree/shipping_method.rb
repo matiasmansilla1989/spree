@@ -1,5 +1,6 @@
 module Spree
   class ShippingMethod < Spree::Base
+    include MultiStore
     acts_as_paranoid
     include Spree::CalculatedAdjustments
     DISPLAY = [:both, :front_end, :back_end]

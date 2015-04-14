@@ -1,11 +1,15 @@
 module Spree
   class StockLocation < Spree::Base
+    include MultiStore
+
     has_many :shipments
     has_many :stock_items, dependent: :delete_all, inverse_of: :stock_location
     has_many :stock_movements, through: :stock_items
 
     belongs_to :state, class_name: 'Spree::State'
     belongs_to :country, class_name: 'Spree::Country'
+
+    belongs_to :store
 
     validates_presence_of :name
 
@@ -21,7 +25,7 @@ module Spree
 
     # Wrapper for creating a new stock item respecting the backorderable config
     def propagate_variant(variant)
-      self.stock_items.create!(variant: variant, backorderable: self.backorderable_default)
+      self.stock_items.create!(variant: variant, backorderable: self.backorderable_default, store_id: self.store.id)
     end
 
     # Return either an existing stock item or create a new one. Useful in
@@ -107,7 +111,7 @@ module Spree
 
     private
       def create_stock_items
-        Variant.find_each { |variant| self.propagate_variant(variant) }
+        Variant.filter_store(self.store_id).find_each { |variant| self.propagate_variant(variant) }
       end
 
       def ensure_one_default

@@ -10,6 +10,7 @@ end
 
 module Spree
   class TaxRate < Spree::Base
+    include MultiStore
     acts_as_paranoid
 
     # Need to deal with adjustments before calculator is destroyed.
@@ -20,6 +21,7 @@ module Spree
 
     belongs_to :zone, class_name: "Spree::Zone", inverse_of: :tax_rates
     belongs_to :tax_category, class_name: "Spree::TaxCategory", inverse_of: :tax_rates
+    belongs_to :store, class_name: "Spree::Zone", inverse_of: :tax_rates
 
     has_many :adjustments, as: :source
 

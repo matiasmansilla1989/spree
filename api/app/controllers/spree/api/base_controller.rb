@@ -62,6 +62,7 @@ module Spree
       end
 
       def authenticate_user
+        admin_user
         unless @current_api_user
           if requires_authentication? && api_key.blank? && order_token.blank?
             render "spree/api/errors/must_specify_api_key", :status => 401 and return
@@ -130,6 +131,15 @@ module Spree
 
       def order_token
         request.headers["X-Spree-Order-Token"] || params[:order_token]
+      end
+
+      def admin_user
+        if (session["warden.user.spree_user.key"].present? && 
+          session["warden.user.spree_user.key"][0].present? && 
+          session["warden.user.spree_user.key"][0][0].present?)
+          @current_api_user = Spree::User.find session["warden.user.spree_user.key"][0][0]
+          @store = @current_api_user.store
+        end 
       end
 
       def find_product(id)

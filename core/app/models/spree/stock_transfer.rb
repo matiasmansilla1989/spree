@@ -5,6 +5,8 @@ module Spree
     belongs_to :source_location, :class_name => 'StockLocation'
     belongs_to :destination_location, :class_name => 'StockLocation'
 
+    belongs_to :store
+
     make_permalink field: :number, prefix: 'T'
 
     def to_param

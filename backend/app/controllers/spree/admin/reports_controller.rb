@@ -40,7 +40,7 @@ module Spree
 
         params[:q][:s] ||= "completed_at desc"
 
-        @search = Order.complete.ransack(params[:q])
+        @search = Order.complete.filter_store(current_store).ransack(params[:q])
         @orders = @search.result
 
         @totals = {}

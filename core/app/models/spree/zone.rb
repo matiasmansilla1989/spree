@@ -1,8 +1,10 @@
 module Spree
   class Zone < Spree::Base
+    include MultiStore
     has_many :zone_members, dependent: :destroy, class_name: "Spree::ZoneMember", inverse_of: :zone
     has_many :tax_rates, dependent: :destroy, inverse_of: :zone
     has_and_belongs_to_many :shipping_methods, :join_table => 'spree_shipping_methods_zones'
+    belongs_to :store
 
     validates :name, presence: true, uniqueness: { allow_blank: true }
     after_save :remove_defunct_members
@@ -122,7 +124,7 @@ module Spree
       end
 
       def remove_previous_default
-        Spree::Zone.where('id != ?', self.id).update_all(default_tax: false) if default_tax
+        Spree::Zone.where('id != ? AND store_id = ?', self.id, self.store_id).update_all(default_tax: false) if default_tax
       end
 
       def set_zone_members(ids, type)

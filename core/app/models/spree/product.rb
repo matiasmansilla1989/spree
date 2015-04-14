@@ -78,6 +78,7 @@ module Spree
     after_create :set_master_variant_defaults
     after_create :add_associations_from_prototype
     after_create :build_variants_from_option_values_hash, if: :option_values_hash
+    after_create :set_variant_store_id
 
     after_destroy :punch_slug
 
@@ -249,11 +250,11 @@ module Spree
       ensure_option_types_exist_for_values_hash
       values = option_values_hash.values
       values = values.inject(values.shift) { |memo, value| memo.product(value).map(&:flatten) }
-
       values.each do |ids|
         variant = variants.create(
           option_value_ids: ids,
-          price: master.price
+          price: master.price,
+          store_id: self.store.id
         )
       end
       save
@@ -326,6 +327,10 @@ module Spree
 
       taxonomy_ids_to_touch = taxons_to_touch.map(&:taxonomy_id).flatten.uniq
       Spree::Taxonomy.where(id: taxonomy_ids_to_touch).update_all(updated_at: Time.current)
+    end
+
+    def set_variant_store_id
+      self.master.update_attributes(store_id: self.store.id)
     end
 
   end
