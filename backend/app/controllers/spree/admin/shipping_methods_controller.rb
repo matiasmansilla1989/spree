@@ -40,6 +40,9 @@ module Spree
         @available_zones = Zone.order(:name).filter_store(current_store.id)
         @tax_categories = Spree::TaxCategory.order(:name).filter_store(current_store.id)
         @calculators = ShippingMethod.calculators.sort_by(&:name)
+        # puts "----" * 100
+        # puts @calculators
+        # puts @calculators.shipping_methods
       end
     end
   end

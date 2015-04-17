@@ -1,6 +1,6 @@
 module Spree
   class ReimbursementType < Spree::Base
-    include Spree::NamedType
+    include Spree::NamedTypeWithoutStore
 
     ORIGINAL = 'original'
 

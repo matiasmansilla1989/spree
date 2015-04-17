@@ -10,6 +10,8 @@ module Spree
 
       attr_accessor :current_api_user
 
+      skip_before_filter :store_authorize
+
       class_attribute :error_notifier
 
       before_action :set_content_type
@@ -138,7 +140,7 @@ module Spree
           session["warden.user.spree_user.key"][0].present? && 
           session["warden.user.spree_user.key"][0][0].present?)
           @current_api_user = Spree::User.find session["warden.user.spree_user.key"][0][0]
-          @store = @current_api_user.store
+          @store = @current_api_user.admin_store
         end 
       end
 

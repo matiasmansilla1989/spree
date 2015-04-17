@@ -6,7 +6,7 @@
       <%= error_message_on :user, :email %>
     <% end %>
 
-<!--     <div data-hook="admin_user_form_roles" class="field">
+    <div data-hook="admin_user_form_roles" class="field">
       <%= label_tag nil, Spree.t(:roles) %>
       <ul>
         <% @roles.each do |role| %>
@@ -17,7 +17,7 @@
         <% end %>
       </ul>
       <%= hidden_field_tag 'user[spree_role_ids][]', '' %>
-    </div> -->
+    </div>
 
   </div>
 

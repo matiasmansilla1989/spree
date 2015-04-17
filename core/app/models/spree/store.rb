@@ -6,9 +6,9 @@ module Spree
     validates :mail_from_address, presence: true
 
     #### Multi Domain ####
-    belongs_to :user, :class_name => 'Spree::User'
+    has_many   :admins,    :class_name => 'Spree::User', :foreign_key => 'store_admin_id'
     has_many   :customers, :class_name => 'Spree::User', :foreign_key => 'store_customer_id'
-    has_many   :products   
+    has_many   :products, dependent: :destroy   
     has_many   :option_types
     has_many   :properties 
     has_many   :taxons
@@ -20,19 +20,21 @@ module Spree
     has_many   :tax_rates
     has_many   :tax_categories
     has_many   :states
-    has_many   :payment_methods, :class_name => 'Spree::PaymentMethod'
-    has_many   :stock_locations
+    has_many   :payment_methods, :class_name => 'Spree::PaymentMethod', inverse_of: :store
+    has_many   :stock_locations, dependent: :destroy
     has_many   :stock_transfers
     has_many   :stock_items
     has_many   :variants
     has_many   :images
     has_many   :promotions
     has_many   :promotion_categories
+    has_many   :return_authorization_reasons
+    has_many   :return_authorizations
     #### Multi Domain ####
 
     before_save :ensure_default_exists_and_is_unique
     before_destroy :validate_not_default
-    after_create :create_countries, :create_zones
+    after_create :create_countries, :create_zones, :create_return_authorization_reasons
 
     scope :by_url, lambda { |url| where("url like ?", "%#{url}%") }
 
@@ -101,6 +103,28 @@ module Spree
         north_america.zone_members.create!(zoneable: Spree::Country.find_by!(name: name))
       end
     end
+
+    def create_return_authorization_reasons
+        Spree::ReturnAuthorizationReason.create!( name: 'Better price available', 
+                                                  store_id: self.id )
+        Spree::ReturnAuthorizationReason.create!( name: 'Missed estimated delivery date', 
+                                                  store_id: self.id)
+        Spree::ReturnAuthorizationReason.create!( name: 'Missing parts or accessories', 
+                                                  store_id: self.id)
+        Spree::ReturnAuthorizationReason.create!( name: 'Damaged/Defective', 
+                                                  store_id: self.id)
+        Spree::ReturnAuthorizationReason.create!( name: 'Different from what was ordered', 
+                                                  store_id: self.id)
+        Spree::ReturnAuthorizationReason.create!( name: 'Different from description', 
+                                                  store_id: self.id)
+        Spree::ReturnAuthorizationReason.create!( name: 'No longer needed/wanted', 
+                                                  store_id: self.id)
+        Spree::ReturnAuthorizationReason.create!( name: 'Accidental order', 
+                                                  store_id: self.id)
+        Spree::ReturnAuthorizationReason.create!( name: 'Unauthorized purchase', 
+                                                  store_id: self.id)
+    end
+
   end
 
 

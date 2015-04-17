@@ -41,7 +41,7 @@ module Spree
         @orders = @search.result(distinct: true).
           page(params[:page]).
           per(params[:per_page] || Spree::Config[:orders_per_page])
-        @orders = spree_current_user.store.present? ? @orders.where(store_id: spree_current_user.store.id) : []
+        @orders = @orders.where(store_id: current_store.id)
 
         # Restore dates
         params[:q][:created_at_gt] = created_at_gt

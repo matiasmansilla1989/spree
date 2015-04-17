@@ -11,7 +11,7 @@ module Spree
 
     has_many :payments, class_name: "Spree::Payment", inverse_of: :payment_method
     has_many :credit_cards, class_name: "Spree::CreditCard"
-    belongs_to :store
+    belongs_to :store, class_name: "Spree::Store"
 
     def self.providers
       Rails.application.config.spree.payment_methods

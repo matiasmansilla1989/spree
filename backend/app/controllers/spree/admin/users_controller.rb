@@ -8,10 +8,11 @@ module Spree
       # http://spreecommerce.com/blog/2010/11/02/json-hijacking-vulnerability/
       before_action :check_json_authenticity, only: :index
       before_action :load_roles
+      before_action :extract_roles_from_params, only: [:create, :update]
 
       def index
         #### Multi domain not allow modify another admin users, only show normal users
-        @collection =  @collection.only_normal_users
+        @collection = current_store.admins + current_store.customers
         respond_with(@collection) do |format|
           format.html
           format.json { render :json => json_data }
@@ -23,19 +24,9 @@ module Spree
       end
 
       def create
-        if params[:user]
-          roles = params[:user].delete("spree_role_ids")
-        end
-        # user_params[:spree_role_ids] = ["1"]
         @user = Spree.user_class.new(user_params)
-        @user.spree_roles << Spree::Role.find_by(name: 'user')
-        @user.customer_store = Spree::Store.find_by(user_id: spree_current_user.id)
+        set_roles
         if @user.save
-
-          # if roles
-          #   @user.spree_roles << roles.reject(&:blank?).collect{|r| Spree::Role.find(r)}
-          # end
-
           flash.now[:success] = Spree.t(:created_successfully)
           render :edit
         else
@@ -44,6 +35,7 @@ module Spree
       end
 
       def update
+        set_roles
         if params[:user]
           roles = params[:user].delete("spree_role_ids")
         end
@@ -113,14 +105,31 @@ module Spree
                                      OR (spree_addresses.firstname #{LIKE} :search AND spree_addresses.id = spree_users.ship_address_id)
                                      OR (spree_addresses.lastname  #{LIKE} :search AND spree_addresses.id = spree_users.ship_address_id)",
                                     { :search => "#{params[:q].strip}%" })
-                              .limit(params[:limit] || 100)
+                              .limit(params[:limit] || 100).where("store_customer_id = ? OR store_admin_id = ?", 
+                                current_store.id, current_store.id)
           else
             @search = Spree.user_class.ransack(params[:q])
-            @collection = @search.result.page(params[:page]).per(Spree::Config[:admin_products_per_page])
+            @collection = @search.result.page(params[:page]).per(Spree::Config[:admin_products_per_page]).where("store_customer_id = ? OR store_admin_id = ?", 
+                                current_store.id, current_store.id)
           end
         end
 
       private
+
+        def set_roles
+          if @roles_ids
+            @user.spree_roles = Spree::Role.where(id: @roles_ids)
+            @user.admin_store = current_store if @roles_ids.include?("1")
+            @user.customer_store = current_store if @roles_ids.include?("2")
+          end
+        end
+
+        def extract_roles_from_params
+          if params[:user]
+            @roles_ids = params[:user].delete("spree_role_ids")
+          end
+        end
+
         def user_params
           params.require(:user).permit(PermittedAttributes.user_attributes |
                                        [:spree_role_ids,

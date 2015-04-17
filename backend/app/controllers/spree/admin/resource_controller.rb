@@ -49,7 +49,7 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
 
   def create
     @object.attributes = permitted_resource_params
-    @object.store_id = spree_current_user.store.id
+    @object.store_id = current_store.id
     if @object.save
       invoke_callbacks(:create, :after)
       flash[:success] = flash_message_for(@object, :successfully_created)
@@ -141,7 +141,7 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
       else
         @collection ||= collection
         if ((model_class.column_names.include? 'store_id') && (object_name != 'user'))
-          @collection = @collection.where(store_id: spree_current_user.store.id) 
+          @collection = @collection.where(store_id: current_store.id) 
         end
         # note: we don't call authorize here as the collection method should use
         # CanCan's accessible_by method to restrict the actual records returned
