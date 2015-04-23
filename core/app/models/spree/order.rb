@@ -153,7 +153,8 @@ module Spree
     end
 
     def currency
-      self[:currency] || Spree::Config[:currency]
+      # self[:currency] || Spree::Config[:currency]
+      self[:currency] || self.store.currency
     end
 
     def display_outstanding_balance

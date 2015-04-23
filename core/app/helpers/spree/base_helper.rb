@@ -63,8 +63,12 @@ module Spree
       @body_class
     end
 
-    def logo(image_path=Spree::Config[:logo])
-      link_to image_tag(image_path), spree.root_path
+    def logo
+      if current_store.logo_file_name.present?
+        link_to image_tag(current_store.logo), spree.root_path
+      else
+        link_to image_tag(Spree::Config[:logo]), spree.root_path
+      end
     end
 
     def flash_messages(opts = {})
@@ -145,7 +149,7 @@ module Spree
     end
 
     def display_price(product_or_variant)
-      product_or_variant.price_in(current_currency).display_price.to_html
+      product_or_variant.price_in(current_store.currency).display_price.to_html
     end
 
     def pretty_time(time)

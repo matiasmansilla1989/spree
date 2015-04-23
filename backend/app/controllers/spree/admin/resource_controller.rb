@@ -27,6 +27,8 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
   end
 
   def update
+    puts "***" * 100
+    puts params
     invoke_callbacks(:update, :before)
     if @object.update_attributes(permitted_resource_params)
       invoke_callbacks(:update, :after)
@@ -131,7 +133,6 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
     def load_resource
       if member_action?
         @object ||= load_resource_instance
-
         # call authorize! a third time (called twice already in Admin::BaseController)
         # this time we pass the actual instance so fine-grained abilities can control
         # access to individual records, not just entire models.

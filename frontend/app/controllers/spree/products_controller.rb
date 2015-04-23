@@ -10,12 +10,12 @@ module Spree
 
     def index
       @searcher = build_searcher(params.merge(include_images: true))
-      @products = @searcher.retrieve_products
+      @products = @searcher.retrieve_products.filter_store(current_store.id)
       @taxonomies = Spree::Taxonomy.includes(root: :children)
     end
 
     def show
-      @variants = @product.variants_including_master.active(current_currency).includes([:option_values, :images])
+      @variants = @product.variants_including_master.active(current_store.currency).includes([:option_values, :images])
       @product_properties = @product.product_properties.includes(:property)
       @taxon = Spree::Taxon.find(params[:taxon_id]) if params[:taxon_id]
     end
@@ -33,7 +33,7 @@ module Spree
         if try_spree_current_user.try(:has_spree_role?, "admin")
           @products = Product.with_deleted
         else
-          @products = Product.active(current_currency)
+          @products = Product.active(current_store.currency)
         end
         @product = @products.friendly.find(params[:id])
       end

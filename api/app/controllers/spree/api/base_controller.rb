@@ -117,7 +117,8 @@ module Spree
       end
 
       def current_currency
-        Spree::Config[:currency]
+        # Spree::Config[:currency]
+        current_store.currency
       end
       helper_method :current_currency
 

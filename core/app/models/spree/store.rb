@@ -4,6 +4,7 @@ module Spree
     validates :name, presence: true
     validates :url, presence: true
     validates :mail_from_address, presence: true
+    validates :subdomain, presence: true, uniqueness: true
 
     #### Multi Domain ####
     has_many   :admins,    :class_name => 'Spree::User', :foreign_key => 'store_admin_id'
@@ -32,9 +33,10 @@ module Spree
     has_many   :return_authorizations
     #### Multi Domain ####
 
-    before_save :ensure_default_exists_and_is_unique
-    before_destroy :validate_not_default
-    after_create :create_countries, :create_zones, :create_return_authorization_reasons
+    before_save     :ensure_default_exists_and_is_unique, :set_url
+    before_destroy  :validate_not_default
+    after_create    :create_countries, :create_zones, :create_return_authorization_reasons
+
 
     scope :by_url, lambda { |url| where("url like ?", "%#{url}%") }
 
@@ -123,6 +125,14 @@ module Spree
                                                   store_id: self.id)
         Spree::ReturnAuthorizationReason.create!( name: 'Unauthorized purchase', 
                                                   store_id: self.id)
+    end
+
+    def set_url
+      if Rails.env.production?
+        self.url = self.subdomain + '.webappbetaone.socialsquare.ae'
+      else
+        self.url = self.subdomain + '.socialsquare:3001'
+      end
     end
 
   end

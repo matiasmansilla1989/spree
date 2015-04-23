@@ -7,7 +7,8 @@ module Spree
         attr_accessor :current_currency
 
         def initialize(params)
-          self.current_currency = Spree::Config[:currency]
+          # self.current_currency = Spree::Config[:currency]
+          self.current_currency = Spree::Store.find(params[:current_store_id]).currency
           @properties = {}
           prepare(params)
         end

@@ -18,10 +18,13 @@ module Spree
           Spree::Config[name] = value
         end
 
+        store_params.delete(:url) if store_params[:url].present?
+
         current_store.update_attributes store_params
 
         flash[:success] = Spree.t(:successfully_updated, resource: Spree.t(:general_settings))
-        redirect_to edit_admin_general_settings_path
+        ### the subdomain name could change
+        redirect_to ENV['PROTOCOL'] + '://' + current_store.subdomain + ENV['SERVER'] + '/admin/general_settings/edit'
       end
 
       def dismiss_alert
@@ -51,6 +54,7 @@ module Spree
       def set_store
         @store = current_store
       end
+
     end
   end
 end

@@ -32,7 +32,8 @@ module Spree
     private
 
     def check_price
-      self.currency ||= Spree::Config[:currency]
+      # self.currency ||= Spree::Config[:currency]
+      self.currency ||= self.variant.store.currency
     end
 
     def maximum_amount

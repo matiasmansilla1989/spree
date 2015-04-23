@@ -47,7 +47,8 @@ module Spree
     scope :in_stock, -> { joins(:stock_items).where('count_on_hand > ? OR track_inventory = ?', 0, false) }
 
     def self.active(currency = nil)
-      joins(:prices).where(deleted_at: nil).where('spree_prices.currency' => currency || Spree::Config[:currency]).where('spree_prices.amount IS NOT NULL')
+      # joins(:prices).where(deleted_at: nil).where('spree_prices.currency' => currency || Spree::Config[:currency]).where('spree_prices.amount IS NOT NULL')
+      joins(:prices).where(deleted_at: nil).where('spree_prices.currency' => currency || self.store.currency).where('spree_prices.amount IS NOT NULL')
     end
 
     def self.having_orders
@@ -233,12 +234,14 @@ module Spree
           self.price = product.master.price
         end
         if currency.nil?
-          self.currency = Spree::Config[:currency]
+          # self.currency = Spree::Config[:currency]
+          self.currency = self.product.store.currency
         end
       end
 
       def set_cost_currency
-        self.cost_currency = Spree::Config[:currency] if cost_currency.nil? || cost_currency.empty?
+        # self.cost_currency = Spree::Config[:currency] if cost_currency.nil? || cost_currency.empty?
+        self.cost_currency = self.product.store.currency if cost_currency.nil? || cost_currency.empty?
       end
 
       def create_stock_items

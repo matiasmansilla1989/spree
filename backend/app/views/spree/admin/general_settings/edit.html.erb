@@ -4,7 +4,7 @@
   <%= Spree.t(:general_settings) %>
 <% end %>
 
-<%= form_tag admin_general_settings_path, method: :put do %>
+<%= form_tag admin_general_settings_path, method: :put, multipart: true do %>
   <div id="preferences" data-hook>
 
     <fieldset class="general no-border-top">
@@ -35,9 +35,15 @@
         </div>
 
         <div class="field" data-hook="admin_general_setting_input_url">
+          <%= f.label :subdomain %>
+          <br />
+          <%= f.text_field :subdomain, class: 'fullwidth'  %>
+        </div>
+
+        <div class="field" data-hook="admin_general_setting_input_url">
           <%= f.label :url %>
           <br />
-          <%= f.text_field :url, class: 'fullwidth'  %>
+          <%= f.text_field :url, class: 'fullwidth', disabled: 'disabled'%>
         </div>
 
         <div class="field" data-hook="admin_general_setting_mail_from_address">
@@ -45,6 +51,16 @@
           <br />
           <%= f.text_field :mail_from_address, class: 'fullwidth'  %>
         </div>
+
+        <div class="field">
+          <%= f.field_container :logo do %>
+            <%= f.label :logo, Spree.t(:logo) %><br />
+            <%= f.file_field :logo %>
+            <%= error_message_on :store, :logo %>
+          <% end %>
+          <%= image_tag current_store.logo %>
+        </div>
+
       <% end %>
 
       <div class="row">
@@ -53,9 +69,9 @@
             <legend align="center"><%= Spree.t(:currency_settings)%></legend>
             <div class="field">
               <%= label_tag :currency, Spree.t(:choose_currency) %><br>
-              <%= select_tag :currency, currency_options, :class => 'fullwidth' %>
+              <%= select_tag :currency, currency_options, :class => 'fullwidth', name: 'store[currency]' %>
             </div>
-            <div class="field">
+<!--             <div class="field">
               <%= label_tag Spree.t(:currency_symbol_position) %><br>
               <div class="choices">
                 <ul>
@@ -69,15 +85,15 @@
                   </li>
                 </ul>
               </div>
-            </div>
-            <div class="field">
+            </div> -->
+<!--             <div class="field">
               <%= label_tag :currency_decimal_mark, Spree.t(:currency_decimal_mark) %><br>
               <%= text_field_tag :currency_decimal_mark, Spree::Config[:currency_decimal_mark], :size => 3 %>
             </div>
             <div class="field">
               <%= label_tag :currency_thousands_separator, Spree.t(:currency_thousands_separator) %><br>
               <%= text_field_tag :currency_thousands_separator, Spree::Config[:currency_thousands_separator], :size => 3 %>
-            </div>
+            </div> -->
           </fieldset>
         </div>
       </div>
