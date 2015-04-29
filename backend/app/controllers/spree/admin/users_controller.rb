@@ -26,6 +26,7 @@ module Spree
       def create
         @user = Spree.user_class.new(user_params)
         set_roles
+        @user.store = current_store
         if @user.save
           flash.now[:success] = Spree.t(:created_successfully)
           render :edit
@@ -36,6 +37,7 @@ module Spree
 
       def update
         set_roles
+        @user.store = current_store
         if params[:user]
           roles = params[:user].delete("spree_role_ids")
         end

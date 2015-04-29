@@ -27,8 +27,6 @@ class Spree::Admin::ResourceController < Spree::Admin::BaseController
   end
 
   def update
-    puts "***" * 100
-    puts params
     invoke_callbacks(:update, :before)
     if @object.update_attributes(permitted_resource_params)
       invoke_callbacks(:update, :after)

@@ -5,10 +5,12 @@ module Spree
     validates :url, presence: true
     validates :mail_from_address, presence: true
     validates :subdomain, presence: true, uniqueness: true
+    validates :currency, presence: true
 
     #### Multi Domain ####
     has_many   :admins,    :class_name => 'Spree::User', :foreign_key => 'store_admin_id'
     has_many   :customers, :class_name => 'Spree::User', :foreign_key => 'store_customer_id'
+    has_many   :users,     :class_name => 'Spree::User', :foreign_key => 'store_id'
     has_many   :products, dependent: :destroy   
     has_many   :option_types
     has_many   :properties 
@@ -33,7 +35,7 @@ module Spree
     has_many   :return_authorizations
     #### Multi Domain ####
 
-    before_save     :ensure_default_exists_and_is_unique, :set_url
+    before_save     :ensure_default_exists_and_is_unique, :update_users_subdomain
     before_destroy  :validate_not_default
     after_create    :create_countries, :create_zones, :create_return_authorization_reasons
 
@@ -64,6 +66,8 @@ module Spree
         errors.add(:base, :cannot_destroy_default_store)
       end
     end
+
+    private
 
     def create_countries
       require 'carmen'
@@ -127,12 +131,9 @@ module Spree
                                                   store_id: self.id)
     end
 
-    def set_url
-      if Rails.env.production?
-        self.url = self.subdomain + '.webappbetaone.socialsquare.ae'
-      else
-        self.url = self.subdomain + '.socialsquare:3001'
-      end
+    def update_users_subdomain
+      self.admins.update_all(subdomain: subdomain)
+      self.customers.update_all(subdomain: subdomain)
     end
 
   end

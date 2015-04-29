@@ -16,7 +16,7 @@ module Spree
     belongs_to :store
     ### Multi Domain ###
     
-    validates :name, presence: true, uniqueness: true 
+    validates :name, presence: true, :uniqueness => {:scope => [:store_id]}
     validates :presentation, presence: true
 
     default_scope -> { order("#{self.table_name}.position") }

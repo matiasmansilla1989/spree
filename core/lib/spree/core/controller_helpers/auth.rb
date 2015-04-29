@@ -6,7 +6,6 @@ module Spree
 
         included do
           before_filter :set_guest_token
-          before_action :store_authorize
           helper_method :try_spree_current_user
 
           rescue_from CanCan::AccessDenied do |exception|
@@ -78,13 +77,6 @@ module Spree
           end
         end
 
-        # if the user go to another store and he is sign in he will be log out
-        def store_authorize
-          if current_store.customers.where(id: try_spree_current_user).blank? &&
-            current_store.admins.where(id: try_spree_current_user).blank?
-            sign_out :spree_user
-          end
-        end
       end
     end
   end
