@@ -6,12 +6,11 @@ module Spree
           @taxons = taxonomy.root.children
         else
           if params[:ids]
-            @taxons = Spree::Taxon.accessible_by(current_ability, :read).where(id: params[:ids].split(','))
+            @taxons = Spree::Taxon.accessible_by(current_ability, :read).where(id: params[:ids].split(',')).filter_store(@store.id)
           else
-            @taxons = Spree::Taxon.accessible_by(current_ability, :read).order(:taxonomy_id, :lft).ransack(params[:q]).result
+            @taxons = Spree::Taxon.accessible_by(current_ability, :read).order(:taxonomy_id, :lft).ransack(params[:q]).result.filter_store(@store.id)
           end
         end
-        @taxons = @taxons.filter_store(params[:store_id])
         @taxons = @taxons.page(params[:page]).per(params[:per_page])
         respond_with(@taxons)
       end

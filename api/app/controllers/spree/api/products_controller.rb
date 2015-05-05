@@ -4,9 +4,9 @@ module Spree
 
       def index
         if params[:ids]
-          @products = product_scope.where(:id => params[:ids].split(","))
+          @products = product_scope.where(:id => params[:ids].split(",")).filter_store(@store.id)
         else
-          @products = product_scope.ransack(params[:q]).result
+          @products = product_scope.ransack(params[:q]).result.filter_store(@store.id)
         end
 
         @products = @products.distinct.page(params[:page]).per(params[:per_page])

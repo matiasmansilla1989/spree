@@ -9,7 +9,7 @@ module Spree
       # And then JSON building with something like Active Model Serializers
       def users
         if params[:ids]
-          @users = Spree.user_class.where(:id => params[:ids].split(','))
+          @users = Spree.user_class.where(:id => params[:ids].split(',')).filter_store(current_store.id)
         else
           @users = Spree.user_class.ransack({
             :m => 'or',
@@ -18,7 +18,7 @@ module Spree
             :ship_address_lastname_start => params[:q],
             :bill_address_firstname_start => params[:q],
             :bill_address_lastname_start => params[:q]
-          }).result.limit(10)
+          }).result.filter_store(current_store.id).limit(10)
         end
       end
     end

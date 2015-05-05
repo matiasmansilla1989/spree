@@ -8,10 +8,10 @@ module Spree
         @order = order
       end
 
-      def apply
+      def apply(store)
         if order.coupon_code.present?
-          if promotion.present? && promotion.actions.exists?
-            handle_present_promotion(promotion)
+          if promotion(store).present? && promotion(store).actions.exists?
+            handle_present_promotion(promotion(store), store)
           else
             if Promotion.with_coupon_code(order.coupon_code).try(:expired?)
               set_error_code :coupon_code_expired
@@ -34,8 +34,8 @@ module Spree
         @error = Spree.t(c)
       end
 
-      def promotion
-        @promotion ||= Promotion.active.includes(:promotion_rules, :promotion_actions).with_coupon_code(order.coupon_code)
+      def promotion store
+        @promotion ||= Promotion.active.filter_store(store.id).includes(:promotion_rules, :promotion_actions).with_coupon_code(order.coupon_code)
       end
 
       def successful?
@@ -44,7 +44,7 @@ module Spree
 
       private
 
-      def handle_present_promotion(promotion)
+      def handle_present_promotion(promotion, store)
         return promotion_usage_limit_exceeded if promotion.usage_limit_exceeded?(order)
         return promotion_applied if promotion_exists_on_order?(order, promotion)
         unless promotion.eligible?(order)
@@ -56,7 +56,7 @@ module Spree
         # then result here will also be `true`.
         result = promotion.activate(:order => order)
         if result
-          determine_promotion_application_result
+          determine_promotion_application_result(store)
         else
           set_error_code :coupon_code_unknown_error
         end
@@ -78,7 +78,7 @@ module Spree
         order.promotions.include? promotion
       end
 
-      def determine_promotion_application_result
+      def determine_promotion_application_result(store)
         detector = lambda { |p|
           if p.source.promotion.code
             p.source.promotion.code.downcase == order.coupon_code.downcase
@@ -91,7 +91,7 @@ module Spree
         discount ||= order.adjustments.promotion.detect(&detector)
 
         # Check for applied line items.
-        created_line_items = promotion.actions.detect { |a| a.type == 'Spree::Promotion::Actions::CreateLineItems' }
+        created_line_items = promotion(store).actions.detect { |a| a.type == 'Spree::Promotion::Actions::CreateLineItems' }
 
         if (discount && discount.eligible) || created_line_items
           order.update_totals
